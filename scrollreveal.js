@@ -46,8 +46,8 @@ ______________________________________________________________________________*/
 
       if ( sr.tools.isMobile() && !sr.defaults.mobile ) {
         return false;
-      } else if ( !sr.tools.browserSupports('transform') ) {
-        return console.warn('Your browser does not support CSS transform.');
+      } else if ( !sr.tools.isSupported('transform') || !sr.tools.isSupported('transition') ) {
+        return console.warn('ScrollReveal is not supported in this browser.');
       }
 
       sr.store = {
@@ -61,7 +61,7 @@ ______________________________________________________________________________*/
       return sr;
     }
 
-    ScrollReveal.prototype.reveal = function( selector, config, sync ){
+    ScrollReveal.prototype.reveal = function( selector, config, sync ) {
       var elements, container, elem, elemId;
 
       if ( config && config.container ) {
@@ -72,7 +72,7 @@ ______________________________________________________________________________*/
 
       elements = Array.prototype.slice.call( container.querySelectorAll( selector ) );
       if ( !elements.length ) {
-        console.warn( 'reveal(\'' + selector + '\') failed: no elements found.' );
+        console.warn('reveal(\'' + selector + '\') failed: no elements found.');
         return sr;
       }
       for ( var i = 0; i < elements.length; i++ ) {
@@ -154,12 +154,12 @@ ______________________________________________________________________________*/
       elem.styles.transition.delayed = '-webkit-transition: ' + elem.styles.computed.transition + '-webkit-transform ' + config.duration / 1000 + 's ' + config.easing + ' ' + config.delay / 1000 + 's, opacity ' + config.duration / 1000 + 's ' + config.easing + ' ' + config.delay / 1000 + 's; ' +
                                                'transition: ' + elem.styles.computed.transition + 'transform ' + config.duration / 1000 + 's ' + config.easing + ' ' + config.delay / 1000 + 's, opacity ' + config.duration / 1000 + 's ' + config.easing + ' ' + config.delay / 1000 + 's; ';
 
-      elem.styles.transform.initial += ' -webkit-transform:';
-      elem.styles.transform.target  += ' -webkit-transform:';
+      elem.styles.transform.initial = ' -webkit-transform:';
+      elem.styles.transform.target  = ' -webkit-transform:';
       generateTransform( elem.styles.transform );
 
-      elem.styles.transform.initial = 'transform:';
-      elem.styles.transform.target  = 'transform:';
+      elem.styles.transform.initial += 'transform:';
+      elem.styles.transform.target  += 'transform:';
       generateTransform( elem.styles.transform );
 
       function generateTransform( transform ) {
@@ -403,7 +403,7 @@ ______________________________________________________________________________*/
 
     Tools.prototype.forOwn = function( object, callback ) {
       if ( !this.isObject( object ) ){
-        throw new TypeError( 'Expected \'object\', but received \'' + typeof object + '\'.' );
+        throw new TypeError('Expected \'object\', but received \'' + typeof object + '\'.');
       } else {
         for ( var property in object ) {
           if ( object.hasOwnProperty( property ) ) {
@@ -435,7 +435,7 @@ ______________________________________________________________________________*/
       return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test( navigator.userAgent );
     };
 
-    Tools.prototype.browserSupports = function( feature ) {
+    Tools.prototype.isSupported = function( feature ) {
       var sensor    = document.createElement('sensor');
       var cssPrefix = 'Webkit,Moz,O,'.split(',');
       var tests     = ( feature + cssPrefix.join( feature + ',' ) ).split(',');
